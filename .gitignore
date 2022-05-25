@@ -1,0 +1,25 @@
+# folders #
+.git/
+bin/
+include/
+lib/
+lib64/
+__pycache__/
+
+# files #
+*.cfg
+lib
+lib64
+
+# common files #
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.log
+*.sql
+*.sqlite
