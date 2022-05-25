@@ -33,7 +33,7 @@ def init():
     global view_matrix
 
     tracer = Tracer()
-    tracer.load_mesh_from_file("iphan_v2.obj")
+    tracer.load_mesh_from_file("iphan_v5.obj")
 
     pygame.init()
     display = pygame.display.set_mode(display_dim, DOUBLEBUF | OPENGL)
@@ -119,8 +119,15 @@ def visibility_update(keypress):
         change_obj_visibility("Ceiling_Frame.001")
         change_obj_visibility("Ceiling_Frame.002")
         change_obj_visibility("Ceiling_Frame.003")
+        change_obj_visibility("Door_Frame.001")
+        change_obj_visibility("Door_Frame.002")
+        change_obj_visibility("Door_Frame.003")
     if keypress[pygame.K_b]:
         change_obj_visibility("Room")
+    if keypress[pygame.K_u]:
+        change_obj_visibility("Stairs_Base")
+        change_obj_visibility("Stairs.001")
+        change_obj_visibility("Stairs.002")
 
 def main():
     global display

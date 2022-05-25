@@ -29,7 +29,7 @@ class Tracer():
         }
 
     def load_mesh_from_file(self, file_name):
-        self.mesh_loader.load_from_file("iphan_v2.obj")
+        self.mesh_loader.load_from_file(file_name)
 
     def draw_ground_flor(self, x:float, y:float, z:float, color:list):
         glColor4fv(color)
@@ -54,6 +54,10 @@ class Tracer():
                     glColor4fv(self.colors["light_gray"])
                     obj.draw()
 
+                elif obj.name == "Room_Upstairs":
+                    glColor4fv(self.colors["light_gray"])
+                    obj.draw()
+
                 elif obj.name == "Room_Back_White":
                     glColor4fv(self.colors["light_gray"])
                     obj.draw()
@@ -62,7 +66,7 @@ class Tracer():
                     glColor4fv(self.colors["red"])
                     obj.draw()
 
-                elif obj.name == "DoorFrame":
+                elif starts_with(obj.name, "Door_Frame"):
                     glColor4fv(self.colors["brown"])
                     obj.draw()
 
@@ -96,8 +100,16 @@ class Tracer():
                     glColor4fv(self.colors["red"])
                     obj.draw()
 
+                elif starts_with(obj.name, "Column"):
+                    glColor4fv(self.colors["blue"])
+                    obj.draw()
+
                 elif starts_with(obj.name, "Ceiling_Frame"):
                     glColor4fv(self.colors["brown"])
+                    obj.draw()
+
+                elif starts_with(obj.name, "Stairs"):
+                    glColor4fv(self.colors["light_gray"])
                     obj.draw()
 
                 elif obj.name == "Floor":
