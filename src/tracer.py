@@ -40,7 +40,7 @@ class Tracer():
         glVertex3f(-x, y/3, z)
         glEnd()
 
-    def draw_objects(self, list_of_objects:list):
+    def draw_objects(self, list_of_objects:list, doors_theta:list):
         if "Ground_Floor" not in list_of_objects:
             self.draw_ground_flor(15, 45, -0.01, self.colors["dark_gray"])
 
@@ -70,21 +70,73 @@ class Tracer():
                     glColor4fv(self.colors["brown"])
                     obj.draw()
 
-                elif obj.name == "Door.001":
+                elif obj.name == "Door_One_Right":
+                    #0.013333
                     glColor4fv(self.colors["yellow"])
                     glPushMatrix()
-                    glTranslatef(1.122397, 0, 0.013333)
-                    glRotatef(0, 0, 0, 1)
-                    glTranslatef(-1.122397, 0, -0.013333)
+                    glTranslatef(-0.670, 0, 0)
+                    glRotatef(-doors_theta[0], 0, 0, 1)
+                    glTranslatef(0.67, 0, 0)
                     obj.draw()
                     glPopMatrix()
 
-                elif obj.name == "Door.002":
+                elif obj.name == "Door_One_Left":
                     glColor4fv(self.colors["yellow"])
                     glPushMatrix()
-                    glTranslatef(1.122397, 0, 0.013333)
-                    glRotatef(0, 0, 0, 1)
-                    glTranslatef(-1.122397, 0, -0.013333)
+                    glTranslatef(0.67, 0, 0)
+                    glRotatef(doors_theta[0], 0, 0, 1)
+                    glTranslatef(-0.67, 0, 0)
+                    obj.draw()
+                    glPopMatrix()
+
+                elif obj.name == "Door_Two_Right":
+                    #0.013333
+                    glColor4fv(self.colors["yellow"])
+                    glPushMatrix()
+                    glTranslatef(2.946450, 0, 0)
+                    glRotatef(-doors_theta[1], 0, 0, 1)
+                    glTranslatef(-2.946450, 0, 0)
+                    obj.draw()
+                    glPopMatrix()
+
+                elif obj.name == "Door_Two_Left":
+                    glColor4fv(self.colors["yellow"])
+                    glPushMatrix()
+                    glTranslatef(4.295177, 0, 0)
+                    glRotatef(doors_theta[1], 0, 0, 1)
+                    glTranslatef(-4.295177, 0, 0)
+                    obj.draw()
+                    glPopMatrix()
+
+                elif obj.name == "Door_Three_Right":
+                    #0.013333
+                    glColor4fv(self.colors["yellow"])
+                    glPushMatrix()
+                    glTranslatef(-4.237305, 0, 0)
+                    glRotatef(-doors_theta[2], 0, 0, 1)
+                    glTranslatef(4.237305, 0, 0)
+                    obj.draw()
+                    glPopMatrix()
+
+                elif obj.name == "Door_Three_Left":
+                    glColor4fv(self.colors["yellow"])
+                    glPushMatrix()
+                    glTranslatef(-2.888578, 0, 0)
+                    glRotatef(doors_theta[2], 0, 0, 1)
+                    glTranslatef(2.888578, 0, 0)
+                    obj.draw()
+                    glPopMatrix()
+
+                elif obj.name == "Window_Frame":
+                    glColor4fv(self.colors["brown"])
+                    obj.draw()
+
+                elif obj.name == "Window_Door":
+                    glColor4fv(self.colors["yellow"])
+                    glPushMatrix()
+                    glTranslatef(-0.001326, -0.200821, -4.78602)
+                    glRotatef(doors_theta[3], 0, 0, 1)
+                    glTranslatef(0.001326, 0.200821, 4.78602)
                     obj.draw()
                     glPopMatrix()
 

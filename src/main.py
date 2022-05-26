@@ -8,6 +8,8 @@ from OpenGL.GLUT import *
 
 from tracer import Tracer
 
+from enum import Enum
+
 WINDOW_WIDTH = 640
 WINDOW_HEIGHT = 640
 STEP_DISTANCE = 0.2
@@ -25,7 +27,17 @@ camera_x, camera_y, camera_z = 0, 0, 0
 theta_vertical = 0
 theta_horizontal = 0
 
+doors_state = [False, False, False, False]
+doors_theta = [0.0, 0.0, 0.0, 0.0]
+doors_direction_of_movement = [-1, -1, -1, -1]
+
 view_matrix = []
+
+class Door(Enum):
+    one = 0
+    two = 1
+    three = 2
+    window = 3
 
 def init():
     global tracer
@@ -33,7 +45,7 @@ def init():
     global view_matrix
 
     tracer = Tracer()
-    tracer.load_mesh_from_file("iphan_v5.obj")
+    tracer.load_mesh_from_file("iphan_v6.obj")
 
     pygame.init()
     display = pygame.display.set_mode(display_dim, DOUBLEBUF | OPENGL)
@@ -124,15 +136,47 @@ def visibility_update(keypress):
         change_obj_visibility("Door_Frame.003")
     if keypress[pygame.K_b]:
         change_obj_visibility("Room")
+        change_obj_visibility("Room_Upstairs")
     if keypress[pygame.K_u]:
         change_obj_visibility("Stairs_Base")
         change_obj_visibility("Stairs.001")
         change_obj_visibility("Stairs.002")
+    if keypress[pygame.K_h]:
+        change_obj_visibility("Ceiling")
+        change_obj_visibility("Ceiling_Frame.001")
+        change_obj_visibility("Ceiling_Frame.002")
+        change_obj_visibility("Ceiling_Frame.003")
+        change_obj_visibility("Door_Frame.001")
+        change_obj_visibility("Door_Frame.002")
+        change_obj_visibility("Door_Frame.003")
+        change_obj_visibility("Room")
+        change_obj_visibility("Room_Upstairs")
+        change_obj_visibility("Stairs_Base")
+        change_obj_visibility("Stairs.001")
+        change_obj_visibility("Stairs.002")
+
+def change_state_door(door:int):
+    global doors_state
+
+    doors_state[door] = not doors_state[door]
+
+def open_door(door:int):
+    global doors_state
+    global doors_theta
+    global doors_direction_of_movement
+
+    if 0 < doors_theta[door] < 90:
+        doors_theta[door] += doors_direction_of_movement[door]
+
+    elif doors_theta[door] == 0 or doors_theta[door] == 90:
+        doors_direction_of_movement[door] *= -1
+        doors_theta[door] += doors_direction_of_movement[door]
+        doors_state[door] = not doors_state[door]
 
 def main():
     global display
 
-    up_down_angle = 0.0
+
     is_paused = False
     is_set_to_close = False
     mouse_pos = [0, 0]
@@ -146,9 +190,20 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE or event.key == pygame.K_RETURN:
                     is_set_to_close = True
-                if event.key == pygame.K_PAUSE or event.key == pygame.K_p:
+                elif event.key == pygame.K_PAUSE or event.key == pygame.K_p:
                     is_paused = not is_paused
                     pygame.mouse.set_pos(display_center)
+                elif event.key == pygame.K_1:
+                    change_state_door(Door.one.value)
+                elif event.key == pygame.K_2:
+                    change_state_door(Door.two.value)
+                elif event.key == pygame.K_3:
+                    change_state_door(Door.three.value)
+                elif event.key == pygame.K_4:
+                    change_state_door(Door.window.value)
+                else:
+                    visibility_update(pygame.key.get_pressed())
+
             if not is_paused:
                 if event.type == pygame.MOUSEMOTION:
                     mouse_pos = [event.pos[i] - display_center[i] for i in \
@@ -158,7 +213,11 @@ def main():
         if not is_paused:
             keypress = pygame.key.get_pressed()
 
-            visibility_update(keypress)
+            for i in range(0,4):
+                if doors_state[i]:
+                    open_door(i)
+
+            #visibility_update(keypress)
 
             view_update(mouse_pos, keypress)
 
@@ -167,7 +226,7 @@ def main():
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
             glPushMatrix()
-            tracer.draw_objects(objects_not_to_be_drawn)
+            tracer.draw_objects(objects_not_to_be_drawn, doors_theta)
             glPopMatrix()
 
             pygame.display.flip()
