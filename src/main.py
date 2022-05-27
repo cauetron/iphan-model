@@ -10,10 +10,14 @@ from tracer import Tracer
 
 from enum import Enum
 
+DELAY = 1000//60
+
 WINDOW_WIDTH = 640
 WINDOW_HEIGHT = 640
 STEP_DISTANCE = 0.2
 STEP_THETA = 0.2
+
+moving_velocity = 1
 
 objects_not_to_be_drawn = []
 
@@ -34,9 +38,9 @@ doors_direction_of_movement = [-1, -1, -1, -1]
 view_matrix = []
 
 class Door(Enum):
-    one = 0
-    two = 1
-    three = 2
+    center = 0
+    left = 1
+    right = 2
     window = 3
 
 def init():
@@ -73,25 +77,34 @@ def init():
 
 def move_camera_with_keypress(keypress):
     global camera_x, camera_y, camera_z
+    global moving_velocity
+
+    moving_distance = STEP_DISTANCE * moving_velocity
+
+    if keypress[pygame.K_m]:
+        moving_velocity += 1
+    if keypress[pygame.K_n]:
+        if moving_velocity > 1:
+            moving_velocity -= 1
 
     if keypress[pygame.K_w]:
-        camera_z += STEP_DISTANCE
-        glTranslatef(0, 0, STEP_DISTANCE)
+        camera_z += moving_distance
+        glTranslatef(0, 0, moving_distance)
     if keypress[pygame.K_s]:
-        camera_z -= STEP_DISTANCE
-        glTranslatef(0, 0,-STEP_DISTANCE)
+        camera_z -= moving_distance
+        glTranslatef(0, 0,-moving_distance)
     if keypress[pygame.K_d]:
-        camera_x -= STEP_DISTANCE
-        glTranslatef(-STEP_DISTANCE, 0, 0)
+        camera_x -= moving_distance
+        glTranslatef(-moving_distance, 0, 0)
     if keypress[pygame.K_a]:
-        camera_x += STEP_DISTANCE
-        glTranslatef(STEP_DISTANCE, 0, 0)
+        camera_x += moving_distance
+        glTranslatef(moving_distance, 0, 0)
     if keypress[pygame.K_q]:
-        camera_y -= STEP_DISTANCE
-        glTranslatef(0, -STEP_DISTANCE, 0)
+        camera_y -= moving_distance
+        glTranslatef(0, -moving_distance, 0)
     if keypress[pygame.K_e]:
-        camera_y += STEP_DISTANCE
-        glTranslatef(0, STEP_DISTANCE ,0)
+        camera_y += moving_distance
+        glTranslatef(0, moving_distance, 0)
 
 def view_update(mouse_pos, keypress):
     global view_matrix
@@ -134,6 +147,7 @@ def visibility_update(keypress):
         change_obj_visibility("Door_Frame.001")
         change_obj_visibility("Door_Frame.002")
         change_obj_visibility("Door_Frame.003")
+        change_obj_visibility("Building_Frame")
     if keypress[pygame.K_b]:
         change_obj_visibility("Room")
         change_obj_visibility("Room_Upstairs")
@@ -149,6 +163,7 @@ def visibility_update(keypress):
         change_obj_visibility("Door_Frame.001")
         change_obj_visibility("Door_Frame.002")
         change_obj_visibility("Door_Frame.003")
+        change_obj_visibility("Building_Frame")
         change_obj_visibility("Room")
         change_obj_visibility("Room_Upstairs")
         change_obj_visibility("Stairs_Base")
@@ -166,16 +181,21 @@ def open_door(door:int):
     global doors_direction_of_movement
 
     if 0 < doors_theta[door] < 90:
-        doors_theta[door] += doors_direction_of_movement[door]
+        doors_theta[door] += doors_direction_of_movement[door] * moving_velocity
+        if doors_theta[door] > 90:
+            doors_theta[door] = 90
+            change_state_door(door)
+        elif doors_theta[door] < 0:
+            doors_theta[door] = 0
+            change_state_door(door)
 
     elif doors_theta[door] == 0 or doors_theta[door] == 90:
         doors_direction_of_movement[door] *= -1
-        doors_theta[door] += doors_direction_of_movement[door]
-        doors_state[door] = not doors_state[door]
+        doors_theta[door] += doors_direction_of_movement[door] * 0.00001
+        change_state_door(door)
 
 def main():
     global display
-
 
     is_paused = False
     is_set_to_close = False
@@ -188,17 +208,17 @@ def main():
             if event.type == pygame.QUIT:
                 is_set_to_close = True
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE or event.key == pygame.K_RETURN:
+                if event.key == pygame.K_ESCAPE:
                     is_set_to_close = True
                 elif event.key == pygame.K_PAUSE or event.key == pygame.K_p:
                     is_paused = not is_paused
                     pygame.mouse.set_pos(display_center)
                 elif event.key == pygame.K_1:
-                    change_state_door(Door.one.value)
+                    change_state_door(Door.center.value)
                 elif event.key == pygame.K_2:
-                    change_state_door(Door.two.value)
+                    change_state_door(Door.left.value)
                 elif event.key == pygame.K_3:
-                    change_state_door(Door.three.value)
+                    change_state_door(Door.right.value)
                 elif event.key == pygame.K_4:
                     change_state_door(Door.window.value)
                 else:
@@ -213,15 +233,13 @@ def main():
         if not is_paused:
             keypress = pygame.key.get_pressed()
 
-            for i in range(0,4):
-                if doors_state[i]:
-                    open_door(i)
-
-            #visibility_update(keypress)
-
             view_update(mouse_pos, keypress)
 
-            glLightfv(GL_LIGHT0, GL_POSITION, [-1, -1, -1, 0])
+            for door in Door:
+                if doors_state[door.value]:
+                    open_door(door.value)
+
+            glLightfv(GL_LIGHT0, GL_POSITION, [-1, 2, -1, 0])
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -230,7 +248,7 @@ def main():
             glPopMatrix()
 
             pygame.display.flip()
-            pygame.time.wait(10)
+            pygame.time.wait(DELAY)
 
     pygame.quit()
 

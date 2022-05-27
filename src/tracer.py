@@ -70,6 +70,10 @@ class Tracer():
                     glColor4fv(self.colors["brown"])
                     obj.draw()
 
+                elif obj.name == "Building_Frame":
+                    glColor4fv(self.colors["brown"])
+                    obj.draw()
+
                 elif obj.name == "Door_One_Right":
                     #0.013333
                     glColor4fv(self.colors["yellow"])
