@@ -22,29 +22,37 @@ pip3 install pygame
 
 ## Commands
 
-> w - walk one step into de Z-axis
+> ESC - close the program
 
-> s - walk one step into de negative Z-axis
+> p - pause the program / allows you to use your mouse again
 
-> d - walk one step into de X-axis
+> w - walk one step into Z-axis
 
-> a - walk one step into de negative X-axis
+> s - walk one step into negative Z-axis
 
-> q - walk one step into de Y-axis
+> d - walk one step into X-axis
 
-> e - walk one step into de negative Y-axis
+> a - walk one step into negative X-axis
+
+> q - walk one step into Y-axis
+
+> e - walk one step into negative Y-axis
 
 > c - hide/show the ceiling
 
 > f - hide/show the ceiling frame
 
-> b - hide/show the walls of the building
+> b - hide/show the building structure
 
-> h - hide/show objects with a lot of details
+> u - hide/show the stair
 
-> n -
+> h - hide all of the objects with a lot of details
 
-> m -
+> j - show all of the objects with a lot of details
+
+> n - decrease the velocity of the movement
+
+> m - increase the velocity of the movement
 
 > 1 - open the first door
 
