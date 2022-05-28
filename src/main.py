@@ -50,6 +50,10 @@ class Pos(Enum):
     y = 1
     z = 2
 
+class Visibility(Enum):
+    hide = 0
+    show = 1
+
 def load_mesh(file_name):
     global tracer
 
@@ -139,15 +143,26 @@ def view_update(mouse_pos, keypress):
     glPopMatrix()
     glMultMatrixf(view_matrix)
 
-def change_obj_visibility(obj_name):
+def change_obj_visibility(obj_name, force_visibility=None):
     global objects_not_to_be_drawn
 
-    if obj_name not in objects_not_to_be_drawn:
+    if force_visibility is None:
+        if obj_name not in objects_not_to_be_drawn:
+            objects_not_to_be_drawn.append(obj_name)
+        else:
+            objects_not_to_be_drawn.remove(obj_name)
+
+    elif force_visibility == Visibility.hide and \
+    obj_name not in objects_not_to_be_drawn:
         objects_not_to_be_drawn.append(obj_name)
-    else:
+
+    elif force_visibility == Visibility.show and \
+    obj_name in objects_not_to_be_drawn:
         objects_not_to_be_drawn.remove(obj_name)
 
 def visibility_update(keypress):
+    global force_visibility
+
     if keypress[pygame.K_c]:
         change_obj_visibility("Ceiling")
 
@@ -173,22 +188,40 @@ def visibility_update(keypress):
         change_obj_visibility("Stairs.002")
 
     if keypress[pygame.K_h]:
-        change_obj_visibility("Ceiling")
-        change_obj_visibility("Ceiling_Frame.001")
-        change_obj_visibility("Ceiling_Frame.002")
-        change_obj_visibility("Ceiling_Frame.003")
-        change_obj_visibility("Door_Frame.001")
-        change_obj_visibility("Door_Frame.002")
-        change_obj_visibility("Door_Frame.003")
-        change_obj_visibility("Building_Frame")
-        change_obj_visibility("Room")
-        change_obj_visibility("Room_Upstairs")
-        change_obj_visibility("Stairs_Base")
-        change_obj_visibility("Stairs.001")
-        change_obj_visibility("Stairs.002")
-        change_obj_visibility("Iphan_Frame.001")
-        change_obj_visibility("Iphan_Frame.002")
-        change_obj_visibility("Iphan_Frame.003")
+        change_obj_visibility("Ceiling", Visibility.hide)
+        change_obj_visibility("Ceiling_Frame.001", Visibility.hide)
+        change_obj_visibility("Ceiling_Frame.002", Visibility.hide)
+        change_obj_visibility("Ceiling_Frame.003", Visibility.hide)
+        change_obj_visibility("Door_Frame.001", Visibility.hide)
+        change_obj_visibility("Door_Frame.002", Visibility.hide)
+        change_obj_visibility("Door_Frame.003", Visibility.hide)
+        change_obj_visibility("Building_Frame", Visibility.hide)
+        change_obj_visibility("Room", Visibility.hide)
+        change_obj_visibility("Room_Upstairs", Visibility.hide)
+        change_obj_visibility("Stairs_Base", Visibility.hide)
+        change_obj_visibility("Stairs.001", Visibility.hide)
+        change_obj_visibility("Stairs.002", Visibility.hide)
+        change_obj_visibility("Iphan_Frame.001", Visibility.hide)
+        change_obj_visibility("Iphan_Frame.002", Visibility.hide)
+        change_obj_visibility("Iphan_Frame.003", Visibility.hide)
+
+    if keypress[pygame.K_j]:
+        change_obj_visibility("Ceiling", Visibility.show)
+        change_obj_visibility("Ceiling_Frame.001",  Visibility.show)
+        change_obj_visibility("Ceiling_Frame.002",  Visibility.show)
+        change_obj_visibility("Ceiling_Frame.003",  Visibility.show)
+        change_obj_visibility("Door_Frame.001",  Visibility.show)
+        change_obj_visibility("Door_Frame.002",  Visibility.show)
+        change_obj_visibility("Door_Frame.003",  Visibility.show)
+        change_obj_visibility("Building_Frame",  Visibility.show)
+        change_obj_visibility("Room", Visibility.show)
+        change_obj_visibility("Room_Upstairs",  Visibility.show)
+        change_obj_visibility("Stairs_Base",  Visibility.show)
+        change_obj_visibility("Stairs.001",  Visibility.show)
+        change_obj_visibility("Stairs.002",  Visibility.show)
+        change_obj_visibility("Iphan_Frame.001",  Visibility.show)
+        change_obj_visibility("Iphan_Frame.002",  Visibility.show)
+        change_obj_visibility("Iphan_Frame.003",  Visibility.show)
 
 def change_state_door(door:int):
     global doors_state

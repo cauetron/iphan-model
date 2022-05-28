@@ -34,13 +34,17 @@ pip3 install pygame
 
 > e - walk one step into de negative Y-axis
 
-> c - hide the ceiling
+> c - hide/show the ceiling
 
-> f - hide the ceiling frame
+> f - hide/show the ceiling frame
 
-> b - hide the walls of the building
+> b - hide/show the walls of the building
 
-> h - hide objects with a lot of details
+> h - hide/show objects with a lot of details
+
+> n -
+
+> m -
 
 > 1 - open the first door
 
@@ -49,4 +53,3 @@ pip3 install pygame
 > 3 - open the third door
 
 > 4 - open the window
-
