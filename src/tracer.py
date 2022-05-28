@@ -148,6 +148,18 @@ class Tracer():
                     glColor4fv(self.colors["brown"])
                     obj.draw()
 
+                elif obj.name == "Iphan_Frame.001":
+                    glColor4fv(self.colors["green"])
+                    obj.draw()
+
+                elif obj.name == "Iphan_Frame.002":
+                    glColor4fv(self.colors["red"])
+                    obj.draw()
+
+                elif obj.name == "Iphan_Frame.003":
+                    glColor4fv(self.colors["yellow"])
+                    obj.draw()
+
                 elif starts_with(obj.name, "Art_Display"):
                     glColor4fv(self.colors["white"])
                     obj.draw()

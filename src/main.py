@@ -27,9 +27,11 @@ display_dim = (WINDOW_WIDTH, WINDOW_HEIGHT)
 display_center = [WINDOW_WIDTH//2, WINDOW_HEIGHT//2]
 display = None
 
-camera_x, camera_y, camera_z = 0, 0, 0
 theta_vertical = 0
 theta_horizontal = 0
+
+camera = [0, 15, 0]
+light = [-1, 2, 1, 0]
 
 doors_state = [False, False, False, False]
 doors_theta = [0.0, 0.0, 0.0, 0.0]
@@ -43,13 +45,20 @@ class Door(Enum):
     right = 2
     window = 3
 
-def init():
+class Pos(Enum):
+    x = 0
+    y = 1
+    z = 2
+
+def load_mesh(file_name):
     global tracer
-    global display
-    global view_matrix
 
     tracer = Tracer()
-    tracer.load_mesh_from_file("iphan_v6.obj")
+    tracer.load_mesh_from_file(file_name)
+
+def init():
+    global display
+    global view_matrix
 
     pygame.init()
     display = pygame.display.set_mode(display_dim, DOUBLEBUF | OPENGL)
@@ -66,17 +75,18 @@ def init():
     glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.8, 0.8, 0.8, 1])
 
     glMatrixMode(GL_PROJECTION)
-    gluPerspective(45, (WINDOW_WIDTH/WINDOW_HEIGHT), 0.1, 60.0)
+    gluPerspective(45, WINDOW_WIDTH/WINDOW_HEIGHT, 0.1, 60.0)
 
     glMatrixMode(GL_MODELVIEW)
-    gluLookAt(camera_x, 15, camera_z, 0, 0, 0, 0, 0, 1)
+    gluLookAt(camera[Pos.x.value], camera[Pos.y.value], camera[Pos.z.value],
+    0, 0, 0, 0, 0, 1)
     view_matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
     glLoadIdentity()
 
     pygame.mouse.set_pos(display_center)
 
 def move_camera_with_keypress(keypress):
-    global camera_x, camera_y, camera_z
+    global camera
     global moving_velocity
 
     moving_distance = STEP_DISTANCE * moving_velocity
@@ -88,22 +98,22 @@ def move_camera_with_keypress(keypress):
             moving_velocity -= 1
 
     if keypress[pygame.K_w]:
-        camera_z += moving_distance
+        camera[Pos.z.value] += moving_distance
         glTranslatef(0, 0, moving_distance)
     if keypress[pygame.K_s]:
-        camera_z -= moving_distance
+        camera[Pos.z.value] -= moving_distance
         glTranslatef(0, 0,-moving_distance)
     if keypress[pygame.K_d]:
-        camera_x -= moving_distance
+        camera[Pos.x.value] -= moving_distance
         glTranslatef(-moving_distance, 0, 0)
     if keypress[pygame.K_a]:
-        camera_x += moving_distance
+        camera[Pos.x.value] += moving_distance
         glTranslatef(moving_distance, 0, 0)
     if keypress[pygame.K_q]:
-        camera_y -= moving_distance
+        camera[Pos.y.value] -= moving_distance
         glTranslatef(0, -moving_distance, 0)
     if keypress[pygame.K_e]:
-        camera_y += moving_distance
+        camera[Pos.y.value] += moving_distance
         glTranslatef(0, moving_distance, 0)
 
 def view_update(mouse_pos, keypress):
@@ -140,6 +150,7 @@ def change_obj_visibility(obj_name):
 def visibility_update(keypress):
     if keypress[pygame.K_c]:
         change_obj_visibility("Ceiling")
+
     if keypress[pygame.K_f]:
         change_obj_visibility("Ceiling_Frame.001")
         change_obj_visibility("Ceiling_Frame.002")
@@ -148,13 +159,19 @@ def visibility_update(keypress):
         change_obj_visibility("Door_Frame.002")
         change_obj_visibility("Door_Frame.003")
         change_obj_visibility("Building_Frame")
+
     if keypress[pygame.K_b]:
         change_obj_visibility("Room")
         change_obj_visibility("Room_Upstairs")
+        change_obj_visibility("Iphan_Frame.001")
+        change_obj_visibility("Iphan_Frame.002")
+        change_obj_visibility("Iphan_Frame.003")
+
     if keypress[pygame.K_u]:
         change_obj_visibility("Stairs_Base")
         change_obj_visibility("Stairs.001")
         change_obj_visibility("Stairs.002")
+
     if keypress[pygame.K_h]:
         change_obj_visibility("Ceiling")
         change_obj_visibility("Ceiling_Frame.001")
@@ -169,6 +186,9 @@ def visibility_update(keypress):
         change_obj_visibility("Stairs_Base")
         change_obj_visibility("Stairs.001")
         change_obj_visibility("Stairs.002")
+        change_obj_visibility("Iphan_Frame.001")
+        change_obj_visibility("Iphan_Frame.002")
+        change_obj_visibility("Iphan_Frame.003")
 
 def change_state_door(door:int):
     global doors_state
@@ -192,7 +212,7 @@ def open_door(door:int):
     elif doors_theta[door] == 0 or doors_theta[door] == 90:
         doors_direction_of_movement[door] *= -1
         doors_theta[door] += doors_direction_of_movement[door] * 0.00001
-        change_state_door(door)
+        #change_state_door(door)
 
 def main():
     global display
@@ -200,6 +220,8 @@ def main():
     is_paused = False
     is_set_to_close = False
     mouse_pos = [0, 0]
+
+    load_mesh("iphan_v7.obj")
 
     init()
 
@@ -239,7 +261,7 @@ def main():
                 if doors_state[door.value]:
                     open_door(door.value)
 
-            glLightfv(GL_LIGHT0, GL_POSITION, [-1, 2, -1, 0])
+            glLightfv(GL_LIGHT0, GL_POSITION, light)
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
