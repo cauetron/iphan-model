@@ -38,6 +38,8 @@ pip3 install pygame
 
 > e - walk one step into negative Y-axis
 
+> g - hide/show the ground floor
+
 > c - hide/show the ceiling
 
 > f - hide/show the ceiling frame

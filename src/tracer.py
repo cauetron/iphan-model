@@ -15,17 +15,21 @@ class Tracer():
         self.mesh_loader = MeshLoader()
 
         self.colors = {
-        "red": [1, 0, 0, 1],
-        "blue": [0, 1, 0, 1],
-        "green": [0, 0, 1, 1],
-        "yellow": [0, 1, 1, 1],
-        "brown": [75/255, 54/255, 33/255, 1],
-        "pink": [1, 0, 0, 1],
-        "white": [1, 1, 1, 1],
+        "white": [0.9, 0.9, 0.9, 1],
         "light_gray": [0.7, 0.7, 0.7, 1],
         "gray": [0.5, 0.5, 0.5, 1],
-        "dark_gray": [0.2, 0.2, 0.2, 1],
-        "black": [0, 0, 0, 1]
+        "dark_gray": [0.3, 0.3, 0.3, 1],
+        "black": [0.1, 0.1, 0.1, 1],
+        "red": [181/255, 38/255, 51/255, 1],
+        "green": [15/255, 102/255, 94/255, 1],
+        "mustard": [159/255, 133/255, 76/255, 1],
+        "walls": [190/255, 182/255, 170/255, 1],
+        "outside_frames": [200/255, 205/255, 211/255, 1],
+        "brown": [75/255, 54/255, 33/255, 1],
+        "doors": [106/255, 77/255, 73/255, 1],
+        "window": [128/255, 124/255, 123/255, 1],
+        "floor": [137/255, 122/255, 101/255, 1],
+        "beige": [200/255, 188/255, 176/255, 1]
         }
 
     def load_mesh_from_file(self, file_name):
@@ -46,20 +50,16 @@ class Tracer():
 
         for obj in self.mesh_loader.objects:
             if obj.name not in list_of_objects:
-                if obj.name == "Floor":
-                    glColor4fv(self.colors["gray"])
-                    obj.draw()
-
-                elif obj.name == "Room":
-                    glColor4fv(self.colors["light_gray"])
+                if obj.name == "Room":
+                    glColor4fv(self.colors["walls"])
                     obj.draw()
 
                 elif obj.name == "Room_Upstairs":
-                    glColor4fv(self.colors["light_gray"])
+                    glColor4fv(self.colors["walls"])
                     obj.draw()
 
                 elif obj.name == "Room_Back_White":
-                    glColor4fv(self.colors["light_gray"])
+                    glColor4fv(self.colors["walls"])
                     obj.draw()
 
                 elif obj.name == "Room_Back_Red":
@@ -67,16 +67,16 @@ class Tracer():
                     obj.draw()
 
                 elif starts_with(obj.name, "Door_Frame"):
-                    glColor4fv(self.colors["brown"])
+                    glColor4fv(self.colors["outside_frames"])
                     obj.draw()
 
                 elif obj.name == "Building_Frame":
-                    glColor4fv(self.colors["brown"])
+                    glColor4fv(self.colors["outside_frames"])
                     obj.draw()
 
                 elif obj.name == "Door_One_Right":
                     #0.013333
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["doors"])
                     glPushMatrix()
                     glTranslatef(-0.670, 0, 0)
                     glRotatef(-doors_theta[0], 0, 0, 1)
@@ -85,7 +85,7 @@ class Tracer():
                     glPopMatrix()
 
                 elif obj.name == "Door_One_Left":
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["doors"])
                     glPushMatrix()
                     glTranslatef(0.67, 0, 0)
                     glRotatef(doors_theta[0], 0, 0, 1)
@@ -94,8 +94,7 @@ class Tracer():
                     glPopMatrix()
 
                 elif obj.name == "Door_Two_Right":
-                    #0.013333
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["doors"])
                     glPushMatrix()
                     glTranslatef(2.946450, 0, 0)
                     glRotatef(-doors_theta[1], 0, 0, 1)
@@ -104,7 +103,7 @@ class Tracer():
                     glPopMatrix()
 
                 elif obj.name == "Door_Two_Left":
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["doors"])
                     glPushMatrix()
                     glTranslatef(4.295177, 0, 0)
                     glRotatef(doors_theta[1], 0, 0, 1)
@@ -114,7 +113,7 @@ class Tracer():
 
                 elif obj.name == "Door_Three_Right":
                     #0.013333
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["doors"])
                     glPushMatrix()
                     glTranslatef(-4.237305, 0, 0)
                     glRotatef(-doors_theta[2], 0, 0, 1)
@@ -123,7 +122,7 @@ class Tracer():
                     glPopMatrix()
 
                 elif obj.name == "Door_Three_Left":
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["doors"])
                     glPushMatrix()
                     glTranslatef(-2.888578, 0, 0)
                     glRotatef(doors_theta[2], 0, 0, 1)
@@ -132,11 +131,11 @@ class Tracer():
                     glPopMatrix()
 
                 elif obj.name == "Window_Frame":
-                    glColor4fv(self.colors["brown"])
+                    glColor4fv(self.colors["outside_frames"])
                     obj.draw()
 
                 elif obj.name == "Window_Door":
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["window"])
                     glPushMatrix()
                     glTranslatef(-0.001326, -0.200821, -4.78602)
                     glRotatef(doors_theta[3], 0, 0, 1)
@@ -157,7 +156,7 @@ class Tracer():
                     obj.draw()
 
                 elif obj.name == "Iphan_Frame.003":
-                    glColor4fv(self.colors["yellow"])
+                    glColor4fv(self.colors["mustard"])
                     obj.draw()
 
                 elif starts_with(obj.name, "Art_Display"):
@@ -169,7 +168,7 @@ class Tracer():
                     obj.draw()
 
                 elif starts_with(obj.name, "Column"):
-                    glColor4fv(self.colors["blue"])
+                    glColor4fv(self.colors["beige"])
                     obj.draw()
 
                 elif starts_with(obj.name, "Ceiling_Frame"):
@@ -177,11 +176,11 @@ class Tracer():
                     obj.draw()
 
                 elif starts_with(obj.name, "Stairs"):
-                    glColor4fv(self.colors["light_gray"])
+                    glColor4fv(self.colors["beige"])
                     obj.draw()
 
                 elif obj.name == "Floor":
-                    glColor4fv(self.colors["light_gray"])
+                    glColor4fv(self.colors["floor"])
                     obj.draw()
 
                 elif obj.name == "Ceiling":

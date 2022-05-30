@@ -17,7 +17,7 @@ WINDOW_HEIGHT = 640
 STEP_DISTANCE = 0.2
 STEP_THETA = 0.2
 
-moving_velocity = 1
+moving_velocity = 1 # the velocity which you move within the model
 
 objects_not_to_be_drawn = []
 
@@ -27,17 +27,18 @@ display_dim = (WINDOW_WIDTH, WINDOW_HEIGHT)
 display_center = [WINDOW_WIDTH//2, WINDOW_HEIGHT//2]
 display = None
 
-theta_vertical = 0
-theta_horizontal = 0
+theta_vertical = 0 # the vertical angle which you are looking at the model
+theta_horizontal = 0 # the vertical angle which you are looking at the model
 
-camera = [0, 15, 0]
-light = [-1, 2, 1, 0]
+camera = [0, 15, 0] # camera position
 
+# variables to control each one of the four doors
 doors_state = [False, False, False, False]
 doors_theta = [0.0, 0.0, 0.0, 0.0]
 doors_direction_of_movement = [-1, -1, -1, -1]
 
-view_matrix = []
+view_matrix = []    # the view matrix, we only keep track of it because we can't
+                    # rotate the two axis at the same time without distortion
 
 class Door(Enum):
     center = 0
@@ -70,13 +71,14 @@ def init():
 
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.7, 0.7, 0.7, 1])
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.9, 0.9, 0.9, 1])
+    glLightfv(GL_LIGHT1, GL_POSITION, [1, 1, 0, 1])
+
     glShadeModel(GL_SMOOTH)
     glEnable(GL_COLOR_MATERIAL)
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
-
-    glEnable(GL_LIGHT0)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.5, 0.5, 0.5, 1])
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.8, 0.8, 0.8, 1])
 
     glMatrixMode(GL_PROJECTION)
     gluPerspective(45, WINDOW_WIDTH/WINDOW_HEIGHT, 0.1, 60.0)
@@ -84,6 +86,7 @@ def init():
     glMatrixMode(GL_MODELVIEW)
     gluLookAt(camera[Pos.x.value], camera[Pos.y.value], camera[Pos.z.value],
     0, 0, 0, 0, 0, 1)
+
     view_matrix = glGetFloatv(GL_MODELVIEW_MATRIX)
     glLoadIdentity()
 
@@ -162,6 +165,9 @@ def change_obj_visibility(obj_name, force_visibility=None):
 
 def visibility_update(keypress):
     global force_visibility
+
+    if keypress[pygame.K_g]:
+        change_obj_visibility("Ground_Floor")
 
     if keypress[pygame.K_c]:
         change_obj_visibility("Ceiling")
@@ -245,7 +251,6 @@ def open_door(door:int):
     elif doors_theta[door] == 0 or doors_theta[door] == 90:
         doors_direction_of_movement[door] *= -1
         doors_theta[door] += doors_direction_of_movement[door] * 0.00001
-        #change_state_door(door)
 
 def main():
     global display
@@ -254,7 +259,7 @@ def main():
     is_set_to_close = False
     mouse_pos = [0, 0]
 
-    load_mesh("iphan_v7.obj")
+    load_mesh("iphan_v8.obj")
 
     init()
 
@@ -293,8 +298,6 @@ def main():
             for door in Door:
                 if doors_state[door.value]:
                     open_door(door.value)
-
-            glLightfv(GL_LIGHT0, GL_POSITION, light)
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 

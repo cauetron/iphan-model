@@ -50,7 +50,7 @@ class MeshLoader:
                 elif flag == Flag.v.name:
                     l = [float(n) for n in parsed_line] # [x, y, z] in blender
                     l[1], l[2] = l[2], l[1] # [x, -y, z] => [x, z, -y] opengl
-                    l[0] = -l[0] # this fix the inverted screen
+                    l[0] = -l[0] # this fix the inverted screen bug
                     v.append(l)
 
                 elif flag == Flag.vn.name: # [nx, ny, nz]
@@ -65,7 +65,7 @@ class MeshLoader:
                     # trim the last \n if it exists
                     parsed_line[-1] = parsed_line[-1].replace('\n', "")
 
-                    # face, three or more vertices in v/vt/vn form
+                    # a face is three vertices v/vt/vn in the form
                     # [../../.., ../../.., ../../.., ...]
 
                     face_vertices = []
@@ -74,14 +74,13 @@ class MeshLoader:
 
                     for vertex in parsed_line:
                         # vertex = v/vt/vn
-                        #l = [int(n) - 1 for n in vertex.split("/")]
 
                         l = []
                         for n in vertex.split("/"):
-                            if n == "":
+                            if n == "": # if the vt is empty
                                 n = None
                             else:
-                                n = int(n) - 1
+                                n = int(n) - 1 
                             l.append(n)
 
                         face_vertices.append(v[ l[0] - tam_v])
