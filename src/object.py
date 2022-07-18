@@ -6,7 +6,7 @@ class Object:
 
     def __init__(self, name):
         self.name = name
-        self.faces = []
+        self.faces = [] # ././. , ././. , ././.
 
     def draw(self):
         glBegin(GL_TRIANGLES)

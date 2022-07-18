@@ -21,6 +21,7 @@ class Tracer():
         "dark_gray": [0.3, 0.3, 0.3, 1],
         "black": [0.1, 0.1, 0.1, 1],
         "red": [181/255, 38/255, 51/255, 1],
+        "blue": [38/255, 51/255, 181/255, 1],
         "green": [15/255, 102/255, 94/255, 1],
         "mustard": [159/255, 133/255, 76/255, 1],
         "walls": [190/255, 182/255, 170/255, 1],
@@ -142,6 +143,20 @@ class Tracer():
                     glTranslatef(0.001326, 0.200821, 4.78602)
                     obj.draw()
                     glPopMatrix()
+
+                elif obj.name == "Fan_Ceiling":
+                    glColor4fv(self.colors["beige"])
+                    obj.draw()
+
+                elif starts_with(obj.name, "Fan"):
+                    glColor4fv(self.colors["blue"])
+                    glPushMatrix()
+                    glTranslatef(0.009791, -10.0783, -3.53949)
+                    glRotatef(-doors_theta[4], 0, 0, 1)
+                    glTranslatef(-0.009791, 10.0783, 3.53949)
+                    obj.draw()
+                    glPopMatrix()
+
 
                 elif obj.name == "Bench":
                     glColor4fv(self.colors["brown"])

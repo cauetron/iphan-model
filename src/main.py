@@ -33,9 +33,9 @@ theta_horizontal = 0 # the vertical angle which you are looking at the model
 camera = [0, 15, 0] # camera position
 
 # variables to control each one of the four doors
-doors_state = [False, False, False, False]
-doors_theta = [0.0, 0.0, 0.0, 0.0]
-doors_direction_of_movement = [-1, -1, -1, -1]
+doors_state = [False, False, False, False, False]
+doors_theta = [0.0, 0.0, 0.0, 0.0, 0.0]
+doors_direction_of_movement = [-1, -1, -1, -1, 1]
 
 view_matrix = []    # the view matrix, we only keep track of it because we can't
                     # rotate the two axis at the same time without distortion
@@ -45,6 +45,7 @@ class Door(Enum):
     left = 1
     right = 2
     window = 3
+    fan = 4
 
 class Pos(Enum):
     x = 0
@@ -71,14 +72,12 @@ def init():
 
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.7, 0.7, 0.7, 1])
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.9, 0.9, 0.9, 1])
-    glLightfv(GL_LIGHT1, GL_POSITION, [1, 1, 0, 1])
 
     glShadeModel(GL_SMOOTH)
     glEnable(GL_COLOR_MATERIAL)
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.1, 0.1, 0.1, 1])
 
     glMatrixMode(GL_PROJECTION)
     gluPerspective(45, WINDOW_WIDTH/WINDOW_HEIGHT, 0.1, 60.0)
@@ -91,6 +90,60 @@ def init():
     glLoadIdentity()
 
     pygame.mouse.set_pos(display_center)
+
+def setup_lights():
+    # sun light front
+    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, [0.6, 0.6, 0.6, 1])
+    glLightfv(GL_LIGHT0, GL_SPECULAR, [0.8, 0.8, 0.8, 1])
+    glLightfv(GL_LIGHT0, GL_POSITION, [0, 50, 30, 1])
+
+
+    # sun light back
+    glLightfv(GL_LIGHT1, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, [0.6, 0.6, 0.6, 1])
+    glLightfv(GL_LIGHT1, GL_SPECULAR, [0.8, 0.8, 0.8, 1])
+    glLightfv(GL_LIGHT1, GL_POSITION, [0, -80, 30, 1])
+
+    # spot light at the entrance
+    glLightfv(GL_LIGHT2, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, [0.6, 0.6, 0.6, 1])
+    glLightfv(GL_LIGHT2, GL_SPECULAR, [0.9, 0.9, 0.9, 1])
+
+    #glLightfv(GL_LIGHT2, GL_POSITION, [-3, -4.16, 3.5, 1])
+    glLightfv(GL_LIGHT2, GL_POSITION, [-1, -4.16, 3.5, 1])
+
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 30)
+
+    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, [0, 0, -1])
+    #glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, [0, 0, -1])
+
+    #glLightfv(GL_LIGHT2, GL_POSITION, [0, 2, 2, 0])
+    #glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION, 1)
+    #glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION, 0.7)
+    #glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 1.8)
+
+    #glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2)
+
+    #glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE)
+
+    # spot light at the art display
+    glLightfv(GL_LIGHT3, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, [0.6, 0.6, 0.6, 1])
+    glLightfv(GL_LIGHT3, GL_SPECULAR, [0.9, 0.9, 0.9, 1])
+
+    #glLightfv(GL_LIGHT3, GL_POSITION, [-3, -10, 3.5, 1])
+    glLightfv(GL_LIGHT3, GL_POSITION, [-8, -10, 3.5, 1])
+
+    glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 30)
+
+    #glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, [-1, 0, -1])
+    glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, [1, 0, -1])
+
+    glEnable(GL_LIGHT0)
+    glEnable(GL_LIGHT1)
+    glEnable(GL_LIGHT2)
+    glEnable(GL_LIGHT3)
 
 def move_camera_with_keypress(keypress):
     global camera
@@ -107,6 +160,7 @@ def move_camera_with_keypress(keypress):
     if keypress[pygame.K_w]:
         camera[Pos.z.value] += moving_distance
         glTranslatef(0, 0, moving_distance)
+        #update_lights(0, 0,-moving_distance)
     if keypress[pygame.K_s]:
         camera[Pos.z.value] -= moving_distance
         glTranslatef(0, 0,-moving_distance)
@@ -239,6 +293,11 @@ def open_door(door:int):
     global doors_theta
     global doors_direction_of_movement
 
+    if door == Door.fan.value:
+        doors_theta[door] += doors_direction_of_movement[door] * moving_velocity
+        doors_theta[door] %= 360
+        return
+
     if 0 < doors_theta[door] < 90:
         doors_theta[door] += doors_direction_of_movement[door] * moving_velocity
         if doors_theta[door] > 90:
@@ -259,7 +318,7 @@ def main():
     is_set_to_close = False
     mouse_pos = [0, 0]
 
-    load_mesh("iphan_v8.obj")
+    load_mesh("iphan_v10.obj")
 
     init()
 
@@ -281,6 +340,8 @@ def main():
                     change_state_door(Door.right.value)
                 elif event.key == pygame.K_4:
                     change_state_door(Door.window.value)
+                elif event.key == pygame.K_5:
+                    change_state_door(Door.fan.value)
                 else:
                     visibility_update(pygame.key.get_pressed())
 
@@ -300,6 +361,8 @@ def main():
                     open_door(door.value)
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+            setup_lights()
 
             glPushMatrix()
             tracer.draw_objects(objects_not_to_be_drawn, doors_theta)
