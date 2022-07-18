@@ -8,10 +8,10 @@ sudo apt install python3-pip
 sudo apt install python3.10-venv
 sudo apt install freeglut3-dev
 
-# create the new virutal enviroment
+# create the new virtual enviroment
 python3 -m venv /path/to/new/virtual/environment/
 
-# activate the new virutal enviroment
+# activate the new virtual enviroment
 source /path/to/new/virtual/environment/bin/activate
 
 # install the mandatory python packages
